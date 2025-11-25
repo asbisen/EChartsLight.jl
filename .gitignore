@@ -1,0 +1,50 @@
+# Quarto notebooks / output
+.quarto/
+.quarto-cache/
+_cache/
+_site/
+_files/
+.ipynb_checkpoints/
+*.nb.html
+
+
+# Julia language project - .gitignore
+
+Manifest.toml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors/IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Julia runtime / build artifacts
+.julia/
+.julia/compiled/
+deps/
+deps/
+build/
+artifacts/
+Artifacts.toml
+
+# Compiled objects / libraries
+*.o
+*.so
+*.dylib
+*.dll
+*.ji
+
+# Logs / temp / editor swap
+*.log
+*.tmp
+*~
+*.swp
+
+# Test coverage
+coverage/
+coverage.xml
+*.lcov
