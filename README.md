@@ -2,6 +2,8 @@
 
 A light-weight Julia wrapper for [Apache ECharts](https://echarts.apache.org/en/index.html). Heavily inspired by [PlotlyLight.jl](https://github.com/JuliaComputing/PlotlyLight.jl)
 
+![Example Line Chart](examples/exampleLineChart.png)
+
 ## Features
 
 - **Simple API**: Create interactive charts with minimal boilerplate
