@@ -1,0 +1,111 @@
+---
+title: "Sample Plots"
+engine: julia
+format:
+  html:
+    code-tools:
+      source: true
+      toggle: false
+      caption: none
+    embed-resources: true
+    code-fold: true
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+    code-line-numbers: false
+    highlight-style: github
+---
+
+## Setup
+
+```{julia}
+using EChartsLight
+using DataFrames
+using Dates
+using Distributions
+```
+
+## Plot Calander (Heatmap)
+
+Plot a heatmap in calendar layout for the year 2024 showing random daily caloric consumption. Click on the legend to automatically filter out values from that range.  
+
+```{julia}
+d = collect(string.(Date(2024,1,1):Day(1):Date(2024,12,31)))
+v = round.(rand(Normal(1500,500), length(d)), digits=0)
+data = zip(d,v) |> collect
+
+fig = EChart()
+
+# title
+fig.config.title = Config(top=30, left="center", text="Daily Caloric Intake")
+
+fig.options.width = "800px"
+fig.options.height = "300px"
+
+fig.config.series = Config(type="heatmap", coordinateSystem="calendar", data=data)
+fig.config.tooltip = Config(show=true, position="top")
+fig.config.toolbox.show = false
+
+# VisualMap
+fig.config.visualMap = Config(
+        min=0, max=3000, calculable=true, type="piecewise",
+        orient="horizontal", left="center", top=55)
+
+# Calander
+fig.config.calendar = Config(
+        range="2024", top=140, left=80, right=30,
+        cellSize=["auto", 12],
+        yearLabel = Config(show=true),
+        itemStyle = Config(borderWidth=0.25))
+
+fig
+```
+
+## Scatter Plot
+
+Try using the slider from the colorbar to create a smaller window and observe how the data is filtered in the plot.
+
+```{julia}
+n = 1000
+xdat = 1:n
+ydat = rand(Normal(100, 40), n)  # y-axis
+
+# 60% from first, 40% from second
+mix = MixtureModel([Normal(1000, 200), Exponential(300)], [0.6, 0.4])  
+clr = rand(mix, n)
+data = zip(xdat, ydat, clr) |> collect
+
+
+fig2 = EChart()
+fig2.config.title.text="Simple Scatter Plot"
+
+fig2.config.series = [
+  Config(name="xy plot", type="scatter", symbolSize=8, data=data)
+  ]
+
+fig2.config.xAxis.type = "value"
+fig2.config.yAxis.type = "value"
+
+fig2.config.visualMap = Config(
+    min=minimum(clr),
+    max=maximum(clr),
+    dimension=2,
+    orient="horizontal",
+    right="top",
+    top="bottom",
+    text=["HIGH", "LOW"],
+    calculable=true,
+    inRange = Config(color=["#f2c31a", "#24b7f2", "#ed0a0aff", "#000000"])
+)
+
+
+# Configure tooltip behavior 
+fig2.config.tooltip = Config(
+        trigger="item",
+        axisPointer = Config(type="cross")
+    )
+
+# Show toolbox
+fig2.config.toolbox.show = true
+
+fig2
+```
