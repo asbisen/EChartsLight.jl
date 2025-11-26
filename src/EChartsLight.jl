@@ -53,11 +53,18 @@ include("utils.jl")
 
 
 function Base.show(io::IO, ::MIME"text/html", ec::EChart)
-    page = _render_html_page(ec)     # Render to HTML
-    show(io, MIME"text/html"(), page)
+    # check if we are in a quarto notebook
+    # if we are in quarto, generate HTML that works with "requirejs" loader
+    # otherwise generate a full HTML page
+    in_quarto = contains.(lowercase.(string.(names(Main))), "quarto") |> any
+    if in_quarto
+        page = _generate_html_div(ec; target="requirejs")
+        return show(io, MIME"text/html"(), page)
+    else
+        page = _generate_html_page(ec)     # Render to HTML
+        return show(io, MIME"text/html"(), page)
+    end
 end
-
-
 
 
 end # module EChartsLight
