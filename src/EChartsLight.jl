@@ -1,6 +1,5 @@
 module EChartsLight
 
-using HTTP
 using EasyConfig: Config
 
 using Cobweb
@@ -64,6 +63,12 @@ function Base.show(io::IO, ::MIME"text/html", ec::EChart)
         page = _generate_html_page(ec)     # Render to HTML
         return show(io, MIME"text/html"(), page)
     end
+end
+
+
+function Base.show(io::IO, ::MIME"juliavscode/html", ec::EChart)
+    page = _generate_html_page(ec)     # Render to HTML
+    return show(io, MIME"text/html"(), page)
 end
 
 

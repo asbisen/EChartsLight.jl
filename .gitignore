@@ -48,3 +48,4 @@ Artifacts.toml
 coverage/
 coverage.xml
 *.lcov
+dev/

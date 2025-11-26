@@ -1,0 +1,100 @@
+---
+title: "Snippets - EChartsLight.jl"
+engine: julia
+format:
+  html:
+    code-tools:
+      source: true
+      toggle: false
+      caption: none
+    embed-resources: true
+    code-fold: false
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+    code-line-numbers: false
+    highlight-style: github
+---
+
+## Imports
+
+```{julia}
+using EChartsLight
+using DataFrames
+using Dates
+```
+
+## Generate Data
+
+```{julia}
+"""
+Return a DataFrame with "DateTime" as a column along with 4 columns worth of observations.
+"""
+function data_line(start::DateTime=DateTime(now()), n::Int=100, series::Int=4; freq=Day(1))
+    times = start .+ (0:n-1) .* freq
+    df = DataFrame(time = times)
+    for i in 1:series
+        phase = 2π * rand()
+        period = rand(20:60)
+        amp = 5 + 8 * rand()
+        base = 10 + 8*(i-1)
+        trend = 0.02*(i-1)
+        noise = 0.5 + 1.5 * rand()
+        vals = base .+ amp .* sin.(2π*(0:n-1)/period .+ phase) .+ trend*(0:n-1) .+ randn(n) .* noise
+        df[!, Symbol("series$(i)")] = round.(vals, digits=2)
+    end
+    return df
+end
+```
+
+## Plot Chart
+
+The figure object is converted into a json object and passed to Apache ECharts as is for rendering. Example from 
+[ECharts Gallery](https://echarts.apache.org/examples/en/index.html) should all mostly work. 
+
+```{julia}
+function plot_lines_01(;theme="v5")
+  df = data_line()
+
+  fig = EChart()
+  fig.options.theme = theme
+  fig.options.renderer = "canvas"
+  fig.config.title.text = "Example: Line Chart"
+
+  # Data Series
+  fig.config.series = [
+    Config(type="line", data=df.series1, smooth=true, name="Series 1", colorBy="series"),
+    Config(type="line", data=df.series2, smooth=true, name="Series 2", colorBy="series"),
+    Config(type="line", data=df.series3, smooth=true, name="Series 3", colorBy="series"),
+    Config(type="line", data=df.series4, smooth=true, name="Series 4", colorBy="series"),    
+    ]
+  
+  # show legend
+  fig.config.legend.show = true
+
+  # # Increase the frequency and roation of x-ticklabels
+  # fig.config.xAxis  = Config(
+  #       type="category", 
+  #       data=df.time, 
+  #       name="TimeStamp", 
+  #       axisLabel=Config(interval=5, rotate=90)
+  # )
+  
+  # Let ECharts decide frequency and rotation
+  fig.config.xAxis  = Config(type="category", data=df.time, name="TimeStamp")
+  fig.config.yAxis  = Config(type="value", name="Observation")
+
+  # Show tooltip
+  fig.config.tooltip.show = true
+  fig
+end
+
+plot_lines_01(;theme="vintage")
+```
+
+## Generate HTML
+
+This HTML was generated using Quarto using the command below. 
+
+```bash
+quarto render quarto-notebook.qmd
+```
