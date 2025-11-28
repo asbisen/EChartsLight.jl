@@ -29,35 +29,38 @@ using Distributions
 Plot a heatmap in calendar layout for the year 2024 showing random daily caloric consumption. Click on the legend to automatically filter out values from that range.  
 
 ```{julia}
-d = collect(string.(Date(2024,1,1):Day(1):Date(2024,12,31)))
-v = round.(rand(Normal(1500,500), length(d)), digits=0)
-data = zip(d,v) |> collect
+function plot_heatmap_cal()
+  d = collect(string.(Date(2024,1,1):Day(1):Date(2024,12,31)))
+  v = round.(rand(Normal(1500,500), length(d)), digits=0)
+  data = zip(d,v) |> collect
 
-fig = EChart()
+  fig = EChart()
 
-# title
-fig.config.title = Config(top=30, left="center", text="Daily Caloric Intake")
+  # title
+  fig.config.title = Config(top=30, left="center", text="Daily Caloric Intake")
 
-fig.options.width = "800px"
-fig.options.height = "300px"
+  fig.options.width = "800px"
+  fig.options.height = "300px"
 
-fig.config.series = Config(type="heatmap", coordinateSystem="calendar", data=data)
-fig.config.tooltip = Config(show=true, position="top")
-fig.config.toolbox.show = false
+  fig.config.series = Config(type="heatmap", coordinateSystem="calendar", data=data)
+  fig.config.tooltip = Config(show=true, position="top")
+  fig.config.toolbox.show = false
 
-# VisualMap
-fig.config.visualMap = Config(
-        min=0, max=3000, calculable=true, type="piecewise",
-        orient="horizontal", left="center", top=55)
+  # VisualMap
+  fig.config.visualMap = Config(
+          min=0, max=3000, calculable=true, type="piecewise",
+          orient="horizontal", left="center", top=55)
 
-# Calander
-fig.config.calendar = Config(
-        range="2024", top=140, left=80, right=30,
-        cellSize=["auto", 12],
-        yearLabel = Config(show=true),
-        itemStyle = Config(borderWidth=0.25))
+  # Calander
+  fig.config.calendar = Config(
+          range="2024", top=140, left=80, right=30,
+          cellSize=["auto", 12],
+          yearLabel = Config(show=true),
+          itemStyle = Config(borderWidth=0.25))
 
-fig
+  fig
+end
+plot_heatmap_cal()
 ```
 
 ## Scatter Plot
@@ -65,47 +68,103 @@ fig
 Try using the slider from the colorbar to create a smaller window and observe how the data is filtered in the plot.
 
 ```{julia}
-n = 1000
-xdat = 1:n
-ydat = rand(Normal(100, 40), n)  # y-axis
+function plot_scatter()
+  n = 1000
+  xdat = 1:n
+  ydat = rand(Normal(100, 40), n)  # y-axis
 
-# 60% from first, 40% from second
-mix = MixtureModel([Normal(1000, 200), Exponential(300)], [0.6, 0.4])  
-clr = rand(mix, n)
-data = zip(xdat, ydat, clr) |> collect
+  # 60% from first, 40% from second
+  mix = MixtureModel([Normal(1000, 200), Exponential(300)], [0.6, 0.4])  
+  clr = rand(mix, n)
+  data = zip(xdat, ydat, clr) |> collect
 
 
-fig2 = EChart()
-fig2.config.title.text="Simple Scatter Plot"
+  fig2 = EChart()
+  fig2.config.title.text="Simple Scatter Plot"
 
-fig2.config.series = [
-  Config(name="xy plot", type="scatter", symbolSize=8, data=data)
+  fig2.config.series = [
+    Config(name="xy plot", type="scatter", symbolSize=8, data=data)
+    ]
+
+  fig2.config.xAxis.type = "value"
+  fig2.config.yAxis.type = "value"
+
+  fig2.config.visualMap = Config(
+      min=minimum(clr),
+      max=maximum(clr),
+      dimension=2,
+      orient="horizontal",
+      right="top",
+      top="bottom",
+      text=["HIGH", "LOW"],
+      calculable=true,
+      inRange = Config(color=["#f2c31a", "#24b7f2", "#ed0a0aff", "#000000"])
+  )
+
+
+  # Configure tooltip behavior 
+  fig2.config.tooltip = Config(
+          trigger="item",
+          axisPointer = Config(type="cross")
+      )
+
+  # Show toolbox
+  fig2.config.toolbox.show = true
+
+  fig2
+end
+
+plot_scatter()
+```
+
+## Line Plot (with range selection)
+
+```{julia}
+function plot_line()
+  dt = Date(2024,1,1):Day(1):Date(2024,12,31)
+  val = rand(Normal(100,20), length(dt))
+  data = zip(dt,val) |> collect 
+
+  fig = EChart()
+  fig.config.title.text = "Area Chart"
+  fig.config.xAxis = Config(type="category", boundaryGap=false, data=dt)
+  fig.config.yAxis = Config(type="value", boundaryGap=[0, "100%"])
+
+  # fig.config.dataZoom = [
+  #   Config(type="inside", start=0),
+  #   Config(start=0)
+  # ]
+  # # "end" is a reserved word so adding like this
+  # fig.config.dataZoom[1][:end]=10
+  # fig.config.dataZoom[2][:end]=10
+
+  fig.config.series = [
+    Config(
+      name="Random Data", 
+      type="line", 
+      symbol="*", 
+      sampling="lttb", 
+      itemStyle=Config(color="rgb(255,70,131)"),
+      data=data
+      )
   ]
-
-fig2.config.xAxis.type = "value"
-fig2.config.yAxis.type = "value"
-
-fig2.config.visualMap = Config(
-    min=minimum(clr),
-    max=maximum(clr),
-    dimension=2,
-    orient="horizontal",
-    right="top",
-    top="bottom",
-    text=["HIGH", "LOW"],
-    calculable=true,
-    inRange = Config(color=["#f2c31a", "#24b7f2", "#ed0a0aff", "#000000"])
-)
+  fig
+end
+plot_line()
+```
 
 
-# Configure tooltip behavior 
-fig2.config.tooltip = Config(
-        trigger="item",
-        axisPointer = Config(type="cross")
-    )
+Plot the line chart above with added zoom option.
 
-# Show toolbox
-fig2.config.toolbox.show = true
-
-fig2
+```{julia}
+fig = plot_line()
+fig.config.dataZoom = [
+  Config(type="inside", start=0),
+  Config(start=0)
+]
+# "end" is a reserved word so adding like this
+# end here refers to the initial start-end window
+fig.config.dataZoom[1][:end]=10
+fig.config.dataZoom[2][:end]=10
+fig
 ```

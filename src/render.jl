@@ -45,7 +45,10 @@ end
 
 
 
-
+"""
+Generate HTML within <head>...</head> tags, including the necessary
+<script> tags to load ECharts and the selected theme.
+"""
 function _generate_html_header(ec::EChart)
   theme_path = _asset_theme(ec.options.theme)
   r = h.head(
@@ -57,6 +60,10 @@ function _generate_html_header(ec::EChart)
 end
 
 
+"""
+Only generate the HTML <div>...</div> block for embedding in an existing
+HTML document.
+"""
 function _generate_html_div(ec::EChart; div_id=nothing, target="plainjs")
   div_id = isnothing(div_id) ? "echart-" * randstring() : div_id
 
@@ -68,6 +75,9 @@ function _generate_html_div(ec::EChart; div_id=nothing, target="plainjs")
 end
 
 
+"""
+Generate a complete HTML page including <html>, <head>, and <body> tags.
+"""
 function _generate_html_page(ec::EChart; div_id=nothing)
   div_id = isnothing(div_id) ? "echart-" * randstring() : div_id
   page = h.html(
