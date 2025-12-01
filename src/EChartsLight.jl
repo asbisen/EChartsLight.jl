@@ -36,12 +36,24 @@ toolbox_defaults = Config(
             )
     )
 
+tooltip_defaults = Config(
+        :show => true,
+        :trigger => "item"
+    )
+
 
 export EChart
-Base.@kwdef mutable struct EChart
-    config::Config   = Config(:toolbox => toolbox_defaults)
-    options::Config  = Config(:width => "800px", :height => "400px", :renderer => "svg", :theme => "vintage")
-    jsurl::String    = remote_js_path 
+mutable struct EChart
+    config::Config
+    options::Config
+    jsurl::String
+end
+
+function EChart(; width="800px", height="400px", renderer="svg", theme="vintage")
+    opts = Config(:width => width, :height => height, :renderer => renderer, :theme => theme)
+    config = Config(:toolbox => toolbox_defaults, :tooltip => tooltip_defaults)
+    jsurl = remote_js_path
+    return EChart(config, opts, jsurl)
 end
 
 
