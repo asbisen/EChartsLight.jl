@@ -18,6 +18,7 @@ format:
 ## Setup
 
 ```{julia}
+using Pkg; Pkg.activate("$(@__DIR__)/..")
 using EChartsLight
 using DataFrames
 using Dates
@@ -126,6 +127,7 @@ function plot_line()
   data = zip(dt,val) |> collect 
 
   fig = EChart()
+  fig.options.theme="vintage"
   fig.config.title.text = "Area Chart"
   fig.config.xAxis = Config(type="category", boundaryGap=false, data=dt)
   fig.config.yAxis = Config(type="value", boundaryGap=[0, "100%"])

@@ -30,11 +30,11 @@ function _generate_js(ec::EChart; div_id=nothing, target="plainjs")
     res = """
       require.config({
         paths: {
-          'echarts': '$(jsurl_strip)'
+          'echarts': '$(jsurl_strip)',
+          'theme/$(ec.options.theme)': '$(replace(_asset_theme(ec.options.theme), ".js" => "" ))'
         }
       });
-
-      require(['echarts'], function(echarts) {$(echart_js)});
+      require(['echarts', 'theme/$(ec.options.theme)'], function(echarts) {$(echart_js)});
     """
   else
     res = echart_js
