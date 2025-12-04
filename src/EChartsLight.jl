@@ -42,7 +42,9 @@ tooltip_defaults = Config(
     )
 
 
-export EChart
+export EChart,
+       save
+       
 mutable struct EChart
     config::Config
     options::Config
@@ -83,5 +85,15 @@ function Base.show(io::IO, ::MIME"juliavscode/html", ec::EChart)
     return show(io, MIME"text/html"(), page)
 end
 
+"""
+Write a complete HTML page with the EChart to the specified file path.
+"""
+function save(ec::EChart, filepath::AbstractString)
+    page = _generate_html_page(ec)
+    open(filepath, "w") do io
+        write(io, page)
+    end
+    return nothing
+end
 
 end # module EChartsLight
