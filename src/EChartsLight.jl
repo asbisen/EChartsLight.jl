@@ -13,13 +13,22 @@ export preview # From Cobweb
 # EasyConfig depends upon JSON3 once they migrate
 # to JSON we should change this to JSON
 
+
+# Path to ECharts Javascript files (local and remote)
+
+using ECharts_jll
+
+artifact_dir = ECharts_jll.artifact_dir
+local_js_dir = joinpath(artifact_dir, "node_modules", "echarts", "dist")
+local_echarts_min_js = joinpath(local_js_dir, "echarts.min.js")
+local_echarts_js = joinpath(local_js_dir, "echarts.js")
+
+local_themes_dir = joinpath(artifact_dir, "echarts", "theme")
+
 echarts_version = "6.0.0"
 remote_cdn_root = "https://cdnjs.cloudflare.com/ajax/libs/echarts/$(echarts_version)"
 remote_js_path = joinpath(remote_cdn_root, "echarts.min.js")
 remote_themes_root = joinpath(remote_cdn_root, "theme")
-
-local_js_path = normpath(joinpath(@__DIR__, "..", "assets", "js", "echarts.js"))
-local_themes_dir = normpath(joinpath(@__DIR__, "..", "assets", "themes"))
 
 
 
@@ -60,7 +69,6 @@ end
 
 
 include("render.jl")
-export _render_html_page
 
 include("utils.jl")
 
@@ -70,7 +78,7 @@ function Base.show(io::IO, ::MIME"text/html", ec::EChart)
     # if we are in quarto, generate HTML that works with "requirejs" loader
     # otherwise generate a full HTML page
     in_quarto = contains.(lowercase.(string.(names(Main))), "quarto") |> any
-    if in_quarto
+    if in_quarto 
         page = _generate_html_div(ec; target="requirejs")
         return show(io, MIME"text/html"(), page)
     else
@@ -81,15 +89,22 @@ end
 
 
 function Base.show(io::IO, ::MIME"juliavscode/html", ec::EChart)
-    page = _generate_html_page(ec)     # Render to HTML
+    # Embed Javascript in the HTML page when displaying the chart in VSCode
+    # as VSCode would not have access to local file system
+    page = _generate_html_page(ec; embedjs=true)     # Render to HTML
     return show(io, MIME"text/html"(), page)
 end
 
 """
 Write a complete HTML page with the EChart to the specified file path.
+
+TODO: add options for handling reference to js files
+    - local
+    - remote (cdn)
+    - embedded
 """
-function save(ec::EChart, filepath::AbstractString)
-    page = _generate_html_page(ec)
+function save(ec::EChart, filepath::AbstractString; embedjs=true)
+    page = _generate_html_page(ec; embedjs=embedjs)
     open(filepath, "w") do io
         write(io, page)
     end

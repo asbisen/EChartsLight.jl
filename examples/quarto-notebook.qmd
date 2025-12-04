@@ -56,6 +56,7 @@ function plot_lines_01(;theme="v5")
   df = data_line()
 
   fig = EChart()
+  fig.jsurl = EChartsLight.local_echarts_min_js
   fig.options.theme = theme
   fig.options.renderer = "canvas"
   fig.config.title.text = "Example: Line Chart"
@@ -88,7 +89,7 @@ function plot_lines_01(;theme="v5")
   fig
 end
 
-plot_lines_01(;theme="vintage")
+fig = plot_lines_01(;theme="vintage")
 ```
 
 ## Generate HTML

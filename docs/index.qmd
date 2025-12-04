@@ -128,7 +128,7 @@ function plot_line()
 
   fig = EChart()
   fig.options.theme="vintage"
-  fig.config.title.text = "Area Chart"
+  fig.config.title.text = "Line Chart"
   fig.config.xAxis = Config(type="category", boundaryGap=false, data=dt)
   fig.config.yAxis = Config(type="value", boundaryGap=[0, "100%"])
 
