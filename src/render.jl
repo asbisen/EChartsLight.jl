@@ -19,8 +19,8 @@ function _generate_js(ec::EChart; div_id=nothing, target="plainjs")
   div_id = isnothing(div_id) ? div_id = "echart-" * randstring() : div_id
 
   echart_js = """
-    var myChart = echarts.init(document.getElementById('$div_id'), '$(ec.options.theme)', {renderer: '$(ec.options.renderer)'});
-    var option = JSON.parse('$(JSON3.write(ec.config))');
+    var myChart = echarts.init(document.getElementById('$div_id'), '$(ec.init.theme)', {renderer: '$(ec.init.renderer)'});
+    var option = JSON.parse('$(JSON3.write(ec.option))');
     myChart.setOption(option);
     """
 
@@ -31,10 +31,10 @@ function _generate_js(ec::EChart; div_id=nothing, target="plainjs")
       require.config({
         paths: {
           'echarts': '$(jsurl_strip)',
-          'theme/$(ec.options.theme)': '$(replace(_asset_theme(ec.options.theme), ".js" => "" ))'
+          'theme/$(ec.init.theme)': '$(replace(_asset_theme(ec.init.theme), ".js" => "" ))'
         }
       });
-      require(['echarts', 'theme/$(ec.options.theme)'], function(echarts) {$(echart_js)});
+      require(['echarts', 'theme/$(ec.init.theme)'], function(echarts) {$(echart_js)});
     """
   else
     res = echart_js
@@ -50,7 +50,7 @@ Generate HTML within <head>...</head> tags, including the necessary
 <script> tags to load ECharts and the selected theme.
 """
 function _generate_html_header(ec::EChart; embedjs=false)
-  theme_path = _asset_theme(ec.options.theme)
+  theme_path = _asset_theme(ec.init.theme)
 
   if embedjs
     return h.head(
@@ -76,7 +76,7 @@ function _generate_html_div(ec::EChart; div_id=nothing, target="plainjs")
   div_id = isnothing(div_id) ? "echart-" * randstring() : div_id
 
   jscript = _generate_js(ec; div_id=div_id, target=target)
-  node = h.div(id="$div_id", style="width: $(ec.options.width);height: $(ec.options.height);")
+  node = h.div(id="$div_id", style="width: $(ec.init.width);height: $(ec.init.height);")
   push!(node, h.script(type="text/javascript", jscript))
 
   return node

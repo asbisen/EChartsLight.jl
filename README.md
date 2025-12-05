@@ -19,12 +19,15 @@ Here are some [sample charts](https://asbisen.github.io/EChartsLight.jl/) render
 using EChartsLight
 
 # Create a simple line chart
+x = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+y = [150, 230, 224, 218, 135]
+data = zip(x,y) |> collect
 
 ec = EChart()
 ec.config.title.text = "My First Chart"
-ec.config.xAxis = Config(type="category", data=["Mon", "Tue", "Wed", "Thu", "Fri"])
+ec.config.xAxis = Config(type="category")
 ec.config.yAxis = Config(type="value")
-ec.config.series = [Config(type="line", data=[150, 230, 224, 218, 135])]
+ec.config.series = [Config(type="line", data=data)]
 
 # Display the chart
 # depending upon your environment you may
@@ -38,17 +41,17 @@ ec
 
 The main type is `EChart`, which has three key fields:
 
-- `config`: ECharts option configuration (chart data, axes, series, etc.)
-- `options`: Rendering options (width, height, renderer, theme)
+- `init`: Rendering options (width, height, renderer, theme)
+- `option`: ECharts option configuration (chart data, axes, series, etc.)
 - `jsurl`: URL to the ECharts JavaScript library
 
 ```julia
 # Create an EChart with custom dimensions and theme
 ec = EChart()
-ec.options.width = "600px"
-ec.options.height = "400px"
-ec.options.theme = "vintage"
-ec.options.renderer = "canvas"  # or "svg"
+ec.init.width = "600px"
+ec.init.height = "400px"
+ec.init.theme = "vintage"
+ec.init.renderer = "canvas"  # or "svg"
 ```
 
 ### Using Config Objects
@@ -56,22 +59,22 @@ ec.options.renderer = "canvas"  # or "svg"
 The `Config` object (from EasyConfig.jl) allows you to set ECharts options using Julia syntax:
 
 ```julia
-ec.config.title = Config(text="Sales Data", subtext="Q4 2025")
-ec.config.legend.show = true
-ec.config.tooltip.show = true
+ec.option.title = Config(text="Sales Data", subtext="Q4 2025")
+ec.option.legend.show = true
+ec.option.tooltip.show = true
 ```
 
 ### Multiple Series
 
 ```julia
 ec = EChart()
-ec.config.xAxis = Config(type="category", data=["A", "B", "C"])
-ec.config.yAxis = Config(type="value")
-ec.config.series = [
+ec.option.xAxis = Config(type="category", data=["A", "B", "C"])
+ec.option.yAxis = Config(type="value")
+ec.option.series = [
     Config(type="bar", data=[10, 20, 30], name="Series 1"),
     Config(type="bar", data=[15, 25, 35], name="Series 2")
 ]
-ec.config.legend.show = true
+ec.option.legend.show = true
 ```
 
 ## Core Dependencies

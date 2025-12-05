@@ -57,12 +57,12 @@ function plot_lines_01(;theme="v5")
 
   fig = EChart()
   fig.jsurl = EChartsLight.local_echarts_min_js
-  fig.options.theme = theme
-  fig.options.renderer = "canvas"
-  fig.config.title.text = "Example: Line Chart"
+  fig.init.theme = theme
+  fig.init.renderer = "canvas"
+  fig.option.title.text = "Example: Line Chart"
 
   # Data Series
-  fig.config.series = [
+  fig.option.series = [
     Config(type="line", data=df.series1, smooth=true, name="Series 1", colorBy="series"),
     Config(type="line", data=df.series2, smooth=true, name="Series 2", colorBy="series"),
     Config(type="line", data=df.series3, smooth=true, name="Series 3", colorBy="series"),
@@ -70,10 +70,10 @@ function plot_lines_01(;theme="v5")
     ]
   
   # show legend
-  fig.config.legend.show = true
+  fig.option.legend.show = true
 
   # # Increase the frequency and roation of x-ticklabels
-  # fig.config.xAxis  = Config(
+  # fig.option.xAxis  = Config(
   #       type="category", 
   #       data=df.time, 
   #       name="TimeStamp", 
@@ -81,11 +81,11 @@ function plot_lines_01(;theme="v5")
   # )
   
   # Let ECharts decide frequency and rotation
-  fig.config.xAxis  = Config(type="category", data=df.time, name="TimeStamp")
-  fig.config.yAxis  = Config(type="value", name="Observation")
+  fig.option.xAxis  = Config(type="category", data=df.time, name="TimeStamp")
+  fig.option.yAxis  = Config(type="value", name="Observation")
 
   # Show tooltip
-  fig.config.tooltip.show = true
+  fig.option.tooltip.show = true
   fig
 end
 

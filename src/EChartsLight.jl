@@ -55,16 +55,16 @@ export EChart,
        save
        
 mutable struct EChart
-    config::Config
-    options::Config
-    jsurl::String
+    init::Config
+    option::Config
+    jsurl::AbstractString
 end
 
 function EChart(; width="800px", height="400px", renderer="svg", theme="vintage")
-    opts = Config(:width => width, :height => height, :renderer => renderer, :theme => theme)
-    config = Config(:toolbox => toolbox_defaults, :tooltip => tooltip_defaults)
-    jsurl = remote_js_path
-    return EChart(config, opts, jsurl)
+    init = Config(:width => width, :height => height, :renderer => renderer, :theme => theme)
+    option = Config(:toolbox => toolbox_defaults, :tooltip => tooltip_defaults)
+    jsurl = local_echarts_min_js
+    return EChart(init, option, jsurl)
 end
 
 
@@ -79,6 +79,7 @@ function Base.show(io::IO, ::MIME"text/html", ec::EChart)
     # otherwise generate a full HTML page
     in_quarto = contains.(lowercase.(string.(names(Main))), "quarto") |> any
     if in_quarto 
+        ec.jsurl = remote_js_path  # Use remote js in quarto
         page = _generate_html_div(ec; target="requirejs")
         return show(io, MIME"text/html"(), page)
     else

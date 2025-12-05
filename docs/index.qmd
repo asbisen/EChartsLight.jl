@@ -38,22 +38,22 @@ function plot_heatmap_cal()
   fig = EChart()
 
   # title
-  fig.config.title = Config(top=30, left="center", text="Daily Caloric Intake")
+  fig.option.title = Config(top=30, left="center", text="Daily Caloric Intake")
 
-  fig.options.width = "800px"
-  fig.options.height = "300px"
+  fig.init.width = "800px"
+  fig.init.height = "300px"
 
-  fig.config.series = Config(type="heatmap", coordinateSystem="calendar", data=data)
-  fig.config.tooltip = Config(show=true, position="top")
-  fig.config.toolbox.show = false
+  fig.option.series = Config(type="heatmap", coordinateSystem="calendar", data=data)
+  fig.option.tooltip = Config(show=true, position="top")
+  fig.option.toolbox.show = false
 
   # VisualMap
-  fig.config.visualMap = Config(
+  fig.option.visualMap = Config(
           min=0, max=3000, calculable=true, type="piecewise",
           orient="horizontal", left="center", top=55)
 
   # Calander
-  fig.config.calendar = Config(
+  fig.option.calendar = Config(
           range="2024", top=140, left=80, right=30,
           cellSize=["auto", 12],
           yearLabel = Config(show=true),
@@ -81,16 +81,16 @@ function plot_scatter()
 
 
   fig2 = EChart()
-  fig2.config.title.text="Simple Scatter Plot"
+  fig2.option.title.text="Simple Scatter Plot"
 
-  fig2.config.series = [
+  fig2.option.series = [
     Config(name="xy plot", type="scatter", symbolSize=8, data=data)
     ]
 
-  fig2.config.xAxis.type = "value"
-  fig2.config.yAxis.type = "value"
+  fig2.option.xAxis.type = "value"
+  fig2.option.yAxis.type = "value"
 
-  fig2.config.visualMap = Config(
+  fig2.option.visualMap = Config(
       min=minimum(clr),
       max=maximum(clr),
       dimension=2,
@@ -104,13 +104,13 @@ function plot_scatter()
 
 
   # Configure tooltip behavior 
-  fig2.config.tooltip = Config(
+  fig2.option.tooltip = Config(
           trigger="item",
           axisPointer = Config(type="cross")
       )
 
   # Show toolbox
-  fig2.config.toolbox.show = true
+  fig2.option.toolbox.show = true
 
   fig2
 end
@@ -127,20 +127,20 @@ function plot_line()
   data = zip(dt,val) |> collect 
 
   fig = EChart()
-  fig.options.theme="vintage"
-  fig.config.title.text = "Line Chart"
-  fig.config.xAxis = Config(type="category", boundaryGap=false, data=dt)
-  fig.config.yAxis = Config(type="value", boundaryGap=[0, "100%"])
+  fig.init.theme="vintage"
+  fig.option.title.text = "Line Chart"
+  fig.option.xAxis = Config(type="category", boundaryGap=false, data=dt)
+  fig.option.yAxis = Config(type="value", boundaryGap=[0, "100%"])
 
-  # fig.config.dataZoom = [
+  # fig.option.dataZoom = [
   #   Config(type="inside", start=0),
   #   Config(start=0)
   # ]
   # # "end" is a reserved word so adding like this
-  # fig.config.dataZoom[1][:end]=10
-  # fig.config.dataZoom[2][:end]=10
+  # fig.option.dataZoom[1][:end]=10
+  # fig.option.dataZoom[2][:end]=10
 
-  fig.config.series = [
+  fig.option.series = [
     Config(
       name="Random Data", 
       type="line", 
@@ -160,13 +160,13 @@ Plot the line chart above with added zoom option.
 
 ```{julia}
 fig = plot_line()
-fig.config.dataZoom = [
+fig.option.dataZoom = [
   Config(type="inside", start=0),
   Config(start=0)
 ]
 # "end" is a reserved word so adding like this
 # end here refers to the initial start-end window
-fig.config.dataZoom[1][:end]=10
-fig.config.dataZoom[2][:end]=10
+fig.option.dataZoom[1][:end]=10
+fig.option.dataZoom[2][:end]=10
 fig
 ```

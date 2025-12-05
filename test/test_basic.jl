@@ -5,9 +5,9 @@ using EChartsLight
 
 @testset "EChartsLight" begin
     ec = EChart()
-    @test ec.options.width == "800px"
-    @test ec.options.height == "400px"
-    @test ec.options.renderer == "svg"
+    @test ec.init.width == "800px"
+    @test ec.init.height == "400px"
+    @test ec.init.renderer == "svg"
     @test occursin("echarts", ec.jsurl)
 
     # Render body with a fixed div id and inspect HTML
