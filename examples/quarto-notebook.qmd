@@ -56,7 +56,6 @@ function plot_lines_01(;theme="v5")
   df = data_line()
 
   fig = EChart()
-  fig.jsurl = EChartsLight.local_echarts_min_js
   fig.init.theme = theme
   fig.init.renderer = "canvas"
   fig.option.title.text = "Example: Line Chart"

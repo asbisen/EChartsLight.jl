@@ -7,7 +7,7 @@ import Cobweb: h, preview
 
 using JSON3  
 using Random
-
+using Downloads
 export Config  # From EasyConfig
 export preview # From Cobweb
 # EasyConfig depends upon JSON3 once they migrate
@@ -22,12 +22,12 @@ artifact_dir = ECharts_jll.artifact_dir
 local_js_dir = joinpath(artifact_dir, "node_modules", "echarts", "dist")
 local_echarts_min_js = joinpath(local_js_dir, "echarts.min.js")
 local_echarts_js = joinpath(local_js_dir, "echarts.js")
-
-local_themes_dir = joinpath(artifact_dir, "echarts", "theme")
+local_themes_root = joinpath(artifact_dir, "node_modules", "echarts", "theme")
 
 echarts_version = "6.0.0"
 remote_cdn_root = "https://cdnjs.cloudflare.com/ajax/libs/echarts/$(echarts_version)"
-remote_js_path = joinpath(remote_cdn_root, "echarts.min.js")
+remote_echarts_js = joinpath(remote_cdn_root, "echarts.js")
+remote_echarts_min_js = joinpath(remote_cdn_root, "echarts.min.js")
 remote_themes_root = joinpath(remote_cdn_root, "theme")
 
 
@@ -57,18 +57,13 @@ export EChart,
 mutable struct EChart
     init::Config
     option::Config
-    jsurl::AbstractString
 end
 
 function EChart(; width="800px", height="400px", renderer="svg", theme="vintage")
     init = Config(:width => width, :height => height, :renderer => renderer, :theme => theme)
     option = Config(:toolbox => toolbox_defaults, :tooltip => tooltip_defaults)
-    jsurl = local_echarts_min_js
-    return EChart(init, option, jsurl)
+    return EChart(init, option)
 end
-
-
-include("render.jl")
 
 include("utils.jl")
 
@@ -79,11 +74,10 @@ function Base.show(io::IO, ::MIME"text/html", ec::EChart)
     # otherwise generate a full HTML page
     in_quarto = contains.(lowercase.(string.(names(Main))), "quarto") |> any
     if in_quarto 
-        ec.jsurl = remote_js_path  # Use remote js in quarto
-        page = _generate_html_div(ec; target="requirejs")
+        page = _render_html_div(ec; target="requirejs")
         return show(io, MIME"text/html"(), page)
     else
-        page = _generate_html_page(ec)     # Render to HTML
+        page = _render_html_page(ec)     # Render to HTML
         return show(io, MIME"text/html"(), page)
     end
 end
@@ -92,7 +86,7 @@ end
 function Base.show(io::IO, ::MIME"juliavscode/html", ec::EChart)
     # Embed Javascript in the HTML page when displaying the chart in VSCode
     # as VSCode would not have access to local file system
-    page = _generate_html_page(ec; embedjs=true)     # Render to HTML
+    page = _render_html_page(ec; embed=true)     # Render to HTML
     return show(io, MIME"text/html"(), page)
 end
 
@@ -104,8 +98,8 @@ TODO: add options for handling reference to js files
     - remote (cdn)
     - embedded
 """
-function save(ec::EChart, filepath::AbstractString; embedjs=true)
-    page = _generate_html_page(ec; embedjs=embedjs)
+function save(ec::EChart, filepath::AbstractString; embed=true, remote=false, minified=true)
+    page = _render_html_page(ec; embed=embed, remote=remote, minified=minified)
     open(filepath, "w") do io
         write(io, page)
     end

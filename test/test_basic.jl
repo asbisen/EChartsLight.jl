@@ -8,10 +8,9 @@ using EChartsLight
     @test ec.init.width == "800px"
     @test ec.init.height == "400px"
     @test ec.init.renderer == "svg"
-    @test occursin("echarts", ec.jsurl)
 
     # Render body with a fixed div id and inspect HTML
-    body = EChartsLight._generate_html_page(ec; div_id="testdiv")
+    body = EChartsLight._render_html_page(ec; div_id="testdiv")
     io = IOBuffer()
     show(io, MIME"text/html"(), body)
     html = String(take!(io))
@@ -22,11 +21,10 @@ using EChartsLight
     @test occursin("width: 800px;height: 400px", html)
 
     # Full page contains external script src and script tag
-    page = EChartsLight._generate_html_page(ec)
+    page = EChartsLight._render_html_page(ec)
     io2 = IOBuffer()
     show(io2, MIME"text/html"(), page)
     page_html = String(take!(io2))
-    @test occursin(ec.jsurl, page_html)
     @test occursin("<script", page_html)
 
     # Base.show for EChart produces HTML output
