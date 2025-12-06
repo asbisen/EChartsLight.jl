@@ -24,10 +24,10 @@ y = [150, 230, 224, 218, 135]
 data = zip(x,y) |> collect
 
 ec = EChart()
-ec.config.title.text = "My First Chart"
-ec.config.xAxis = Config(type="category")
-ec.config.yAxis = Config(type="value")
-ec.config.series = [Config(type="line", data=data)]
+ec.option.title.text = "My First Chart"
+ec.option.xAxis = Config(type="category")
+ec.option.yAxis = Config(type="value")
+ec.option.series = [Config(type="line", data=data)]
 
 # Display the chart
 # depending upon your environment you may

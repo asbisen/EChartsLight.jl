@@ -27,11 +27,11 @@ using Dates
 
 ```{julia}
 """
-Return a DataFrame with "DateTime" as a column along with 4 columns worth of observations.
+Return a NamedTuple with "time" as a field along with fields for each series of observations.
 """
 function data_line(start::DateTime=DateTime(now()), n::Int=100, series::Int=4; freq=Day(1))
     times = start .+ (0:n-1) .* freq
-    df = DataFrame(time = times)
+    data = Dict{Symbol, Vector}(:time => times)
     for i in 1:series
         phase = 2π * rand()
         period = rand(20:60)
@@ -40,9 +40,9 @@ function data_line(start::DateTime=DateTime(now()), n::Int=100, series::Int=4; f
         trend = 0.02*(i-1)
         noise = 0.5 + 1.5 * rand()
         vals = base .+ amp .* sin.(2π*(0:n-1)/period .+ phase) .+ trend*(0:n-1) .+ randn(n) .* noise
-        df[!, Symbol("series$(i)")] = round.(vals, digits=2)
+        data[Symbol("series$(i)")] = round.(vals, digits=2)
     end
-    return df
+    return NamedTuple(data)
 end
 ```
 
@@ -53,7 +53,7 @@ The figure object is converted into a json object and passed to Apache ECharts a
 
 ```{julia}
 function plot_lines_01(;theme="v5")
-  df = data_line()
+  d = data_line()
 
   fig = EChart()
   fig.init.theme = theme
@@ -62,10 +62,10 @@ function plot_lines_01(;theme="v5")
 
   # Data Series
   fig.option.series = [
-    Config(type="line", data=df.series1, smooth=true, name="Series 1", colorBy="series"),
-    Config(type="line", data=df.series2, smooth=true, name="Series 2", colorBy="series"),
-    Config(type="line", data=df.series3, smooth=true, name="Series 3", colorBy="series"),
-    Config(type="line", data=df.series4, smooth=true, name="Series 4", colorBy="series"),    
+    Config(type="line", data=d.series1, smooth=true, name="Series 1", colorBy="series"),
+    Config(type="line", data=d.series2, smooth=true, name="Series 2", colorBy="series"),
+    Config(type="line", data=d.series3, smooth=true, name="Series 3", colorBy="series"),
+    Config(type="line", data=d.series4, smooth=true, name="Series 4", colorBy="series"),    
     ]
   
   # show legend
@@ -80,7 +80,7 @@ function plot_lines_01(;theme="v5")
   # )
   
   # Let ECharts decide frequency and rotation
-  fig.option.xAxis  = Config(type="category", data=df.time, name="TimeStamp")
+  fig.option.xAxis  = Config(type="category", data=d.time, name="TimeStamp")
   fig.option.yAxis  = Config(type="value", name="Observation")
 
   # Show tooltip

@@ -90,13 +90,9 @@ function Base.show(io::IO, ::MIME"juliavscode/html", ec::EChart)
     return show(io, MIME"text/html"(), page)
 end
 
+
 """
 Write a complete HTML page with the EChart to the specified file path.
-
-TODO: add options for handling reference to js files
-    - local
-    - remote (cdn)
-    - embedded
 """
 function save(ec::EChart, filepath::AbstractString; embed=true, remote=false, minified=true)
     page = _render_html_page(ec; embed=embed, remote=remote, minified=minified)
